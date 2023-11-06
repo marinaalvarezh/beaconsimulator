@@ -57,6 +57,3 @@ fun BluetoothApp(
 
 
 
-
-
-

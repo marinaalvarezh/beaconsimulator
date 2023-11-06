@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     override fun onStart(){
         super.onStart()
         notificationEnableBluetooth()
@@ -42,6 +41,7 @@ class MainActivity : ComponentActivity() {
         bluetoothManager.adapter
     }
 
+    //fun que hace aparecer la ventana para aceptar/denegar activar el Bluetooth
     private fun notificationEnableBluetooth(){
         if(bluetoothAdapter != null){
             if(bluetoothAdapter?.isEnabled == false){

@@ -11,9 +11,4 @@ data class BluetoothUiState(
     // si la ubicación está activa en el dispositivo es true
     val locationEnabled : Boolean = false,
 
-    // notificacion para activar bluetooth
-    val bluetoothEnabling : Boolean = false,
-    //notificacion para activar location
-    val locationEnabling : Boolean = false
-
 )

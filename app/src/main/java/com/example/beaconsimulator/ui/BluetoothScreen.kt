@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,15 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.navigation.NavController
+import com.example.beaconsimulator.ui.AppScreens
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BluetoothApp(
-    modifier: Modifier = Modifier
+fun BluetoothScreen(
+    navController: NavController
 ) {
     Scaffold(
         topBar = {
@@ -36,17 +41,29 @@ fun BluetoothApp(
                 navigationIcon = {
                     IconButton(onClick = {}) {
                         Icon(Icons.Filled.ArrowBack, "backIcon")
-                        habría que cambiarlo por las tres barritas que activan un menu en un futuro
+                        //habría que cambiarlo por las tres barritas que activan un menu en un futuro
                     }
                 },
-                 */
+                */
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = MaterialTheme.colors.onPrimary
             )
         },
         content = {
-            Column{
-                Text(text = "hola")
+            Column(){
+                Text(
+                    text = "hola"
+                )
+            }
+            Button (
+                onClick = {
+                    navController.navigate(AppScreens.DevicesScreen.route) {
+                    popUpTo(AppScreens.BluetoothScreen.route)
+                    }
+                },
+                modifier = Modifier.padding(16.dp)
+            ){
+                Text(text = "Start")
             }
         }
     )

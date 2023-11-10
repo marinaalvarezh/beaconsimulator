@@ -13,6 +13,8 @@ fun Navigation(
     val navController = rememberNavController()
     
     NavHost(navController = navController, startDestination = AppScreens.BluetoothScreen.route){
+        //administración de rutas del NavHost
+
         composable(route = AppScreens.BluetoothScreen.route){
             BluetoothScreen(navController)
         }

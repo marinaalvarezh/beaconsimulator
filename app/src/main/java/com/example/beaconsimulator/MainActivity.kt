@@ -23,15 +23,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.beaconsimulator.ui.Navigation
-import com.example.beaconsimulator.ui.theme.BeaconsimulatorTheme
+import com.example.compose.beaconsimulator.ui.theme.BeaconSimulatorTheme
+
 
 class MainActivity : ComponentActivity() {
 
-    lateinit var bluetoothStateReceiver: BroadcastReceiver
+    private lateinit var bluetoothStateReceiver: BroadcastReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BeaconsimulatorTheme {
+            BeaconSimulatorTheme {
                 Navigation(onBluetoothStateChanged = {
                     notificationEnableBluetooth()
                 })
@@ -68,7 +69,6 @@ class MainActivity : ComponentActivity() {
             if(bluetoothAdapter?.isEnabled == false){
                 //lanza ventana activar bluetooth permitir/denegar
                     val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
                     startBluetoothIntent.launch(enableBluetoothIntent)
             }
             else{
@@ -82,11 +82,11 @@ class MainActivity : ComponentActivity() {
 
     private val startBluetoothIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
             notificationEnableBluetooth()
         }
 
-    fun registerChangesBluetooth(){
+    //funcion que registra los cambios en el estado del Bluetooth
+    private fun registerChangesBluetooth(){
         bluetoothStateReceiver = object : BroadcastReceiver (){
             override fun onReceive(context: Context, intent: Intent) {
                 val action = intent.action
@@ -99,8 +99,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-
 
 
 }

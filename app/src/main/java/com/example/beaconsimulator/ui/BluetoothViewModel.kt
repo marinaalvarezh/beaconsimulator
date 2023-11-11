@@ -1,13 +1,16 @@
 package com.example.beaconsimulator.ui
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.example.beaconsimulator.data.BluetoothUiState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class BluetoothViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(BluetoothUiState())
-    val uiState: StateFlow<BluetoothUiState> = _uiState.asStateFlow()
 
+    private var bluetoothAdapter: BluetoothAdapter? = null
+    fun getBluetoothAdapter(context: Context): BluetoothAdapter?{
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothAdapter = bluetoothManager.adapter
+        return bluetoothAdapter
+    }
 }

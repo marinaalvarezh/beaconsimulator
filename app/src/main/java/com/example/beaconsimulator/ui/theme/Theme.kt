@@ -1,4 +1,4 @@
-package com.example.compose.beaconsimulator.ui.theme
+package com.example.beaconsimulator.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -31,7 +31,7 @@ private val DarkColors = darkColors(
     background = md_theme_dark_background,
     onBackground = md_theme_dark_onBackground,
     surface = md_theme_dark_surface,
-    onSurface = md_theme_dark_onSurface,
+    onSurface = md_theme_dark_onSurface
 )
 
 @Composable

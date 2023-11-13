@@ -17,13 +17,25 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.beaconsimulator.ui.*
 import com.example.beaconsimulator.ui.theme.BeaconSimulatorTheme
@@ -40,6 +52,11 @@ class MainActivity : ComponentActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         //dispositivos cercanos
         Manifest.permission.NEARBY_WIFI_DEVICES
+    )
+
+    val mainscreenFamily = FontFamily(
+        Font(R.font.roboto_thin, FontWeight.Thin),
+        Font(R.font.anton_regular, FontWeight.Normal)
     )
 
 
@@ -67,18 +84,58 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
+                /**Define diseño IU con boton que comienza la peticion de permisos*/
                 Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.background),
+                    verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                ){
+                    Text(
+                        text = "Beacon\nSimulator",
+                        modifier = Modifier
+                            .padding(30.dp),
+                        color = MaterialTheme.colors.onSurface,
+                        fontFamily = mainscreenFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 65.sp,
+                        textAlign = TextAlign.Center
+                    )
 
-                    Button(onClick = {
-                        multiplePermissionsResultLauncher.launch(permissionsToRequest)
-                    }) {
-                        Text(text = "Accept permissions")
+                    Image(
+                        painter = painterResource(R.drawable.beacon_icon),
+                        contentDescription = "Icono de una baliza en la pantalla principal",
+                        modifier = Modifier
+                            .size(175.dp)
+                    )
+
+                    Button (
+                        onClick = {
+                            multiplePermissionsResultLauncher.launch(permissionsToRequest)
+                        },
+                        modifier = Modifier
+                            .padding(80.dp)
+                            .width(200.dp)
+                            .height(75.dp)
+                            .clip(RoundedCornerShape(15.dp)),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.secondary,
+                            contentColor = MaterialTheme.colors.onSecondary
+                        )
+
+                    ){
+                        Text(
+                            text = "Start",
+                            fontSize = 40.sp,
+                            fontFamily = mainscreenFamily,
+                            fontWeight = FontWeight.Thin
+                        )
                     }
                 }
+
+
+                /**Lanza segundo dialogo de permisos con los que han sido rechazados*/
 
                 secondPermissionDialog
                     .reversed()

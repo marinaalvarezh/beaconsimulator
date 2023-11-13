@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,12 +20,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.beaconsimulator.ui.AppScreens
+import com.example.beaconsimulator.ui.BluetoothViewModel
 
 
 @Composable
 fun BluetoothScreen(
+    viewModel: BluetoothViewModel,
     navController: NavController
 ) {
+    val isPermissionGranted by viewModel.isPermissionGranted.observeAsState(initial = false)
     //fuente predeterminda para la main screen
     val mainscreenFamily = FontFamily(
         Font(R.font.roboto_thin, FontWeight.Thin),
@@ -55,12 +60,13 @@ fun BluetoothScreen(
                 .size(175.dp)
         )
 
-        val btn = Button (
+        Button (
             onClick = {
                 navController.navigate(AppScreens.DevicesScreen.route) {
                     popUpTo(AppScreens.BluetoothScreen.route)
                 }
             },
+            enabled = isPermissionGranted ?: false,
             modifier = Modifier
                 .padding(80.dp)
                 .width(200.dp)

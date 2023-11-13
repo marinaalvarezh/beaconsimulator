@@ -20,6 +20,7 @@ import com.example.beaconsimulator.ui.theme.BeaconSimulatorTheme
 class MainActivity : ComponentActivity() {
 
     private lateinit var bluetoothStateReceiver: BroadcastReceiver
+    private val bluetoothViewModel: BluetoothViewModel by viewModels()
 
     private var requestPermissionLocationLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()){
@@ -32,12 +33,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    private val bluetoothViewModel: BluetoothViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BeaconSimulatorTheme {
-                Navigation(onBluetoothStateChanged = {
+                Navigation(bluetoothViewModel,onBluetoothStateChanged = {
                     notificationEnableBluetooth()
                 })
             }

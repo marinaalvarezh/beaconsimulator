@@ -9,8 +9,7 @@ import com.example.beaconsimulator.BluetoothScreen
 
 @Composable
 fun Navigation(
-    viewModel: BluetoothViewModel,
-    onBluetoothStateChanged: () -> Unit
+    viewModel: BluetoothViewModel
 ){
     val navController = rememberNavController()
 

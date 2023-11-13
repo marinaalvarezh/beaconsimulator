@@ -28,7 +28,7 @@ fun BluetoothScreen(
     viewModel: BluetoothViewModel,
     navController: NavController
 ) {
-    val isPermissionGranted by viewModel.isPermissionGranted.observeAsState(initial = false)
+    val arePermissionsGranted by viewModel.arePermissionsGranted.observeAsState(initial = false)
     //fuente predeterminda para la main screen
     val mainscreenFamily = FontFamily(
         Font(R.font.roboto_thin, FontWeight.Thin),
@@ -66,7 +66,7 @@ fun BluetoothScreen(
                     popUpTo(AppScreens.BluetoothScreen.route)
                 }
             },
-            enabled = isPermissionGranted ?: false,
+            enabled = arePermissionsGranted ?: false,
             modifier = Modifier
                 .padding(80.dp)
                 .width(200.dp)

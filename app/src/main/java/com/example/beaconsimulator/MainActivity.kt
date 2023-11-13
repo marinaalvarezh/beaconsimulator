@@ -1,53 +1,119 @@
 package com.example.beaconsimulator
 
 import android.Manifest
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import com.example.beaconsimulator.ui.BluetoothViewModel
-import com.example.beaconsimulator.ui.Navigation
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.beaconsimulator.ui.*
 import com.example.beaconsimulator.ui.theme.BeaconSimulatorTheme
 
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var bluetoothStateReceiver: BroadcastReceiver
-    private val bluetoothViewModel: BluetoothViewModel by viewModels()
 
-    private var requestPermissionLocationLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()){
-                isGranted->
-            if(isGranted){
-                Toast.makeText(this, "Permission Location Granted", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                Toast.makeText(this, "Permission Location Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
+    private val permissionsToRequest = arrayOf(
+        //ubicacion aproximada
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        //ubicacion precisa
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        //dispositivos cercanos
+        Manifest.permission.NEARBY_WIFI_DEVICES
+    )
 
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BeaconSimulatorTheme {
-                Navigation(bluetoothViewModel,onBluetoothStateChanged = {
-                    notificationEnableBluetooth()
-                })
+
+                val bluetoothViewModel = viewModel<BluetoothViewModel>()
+                val secondPermissionDialog = bluetoothViewModel.secondPermissionDialogList
+
+                /**inicializa el Activity Result Launcher, contract = tipo de accion, onResult = Callback*/
+                val multiplePermissionsResultLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestMultiplePermissions(),
+                    onResult = { perms ->
+                        /**perms : Map <String,Boolean?> la clave es el permiso y el valor boolean asociado accept/deny*/
+                        permissionsToRequest.forEach {permission ->
+                            bluetoothViewModel.onPermissionResult(
+                                permission = permission,
+                                isGranted = perms[permission] ?: false
+                            )
+                        }
+
+                    }
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Button(onClick = {
+                        multiplePermissionsResultLauncher.launch(permissionsToRequest)
+                    }) {
+                        Text(text = "Accept permissions")
+                    }
+                }
+
+                secondPermissionDialog
+                    .reversed()
+                    .forEach {permission ->
+                    PermissionDialog(
+                        textPermission = when (permission) {
+                            Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                                TextLocationCoarsePermission()
+                            }
+                            Manifest.permission.ACCESS_FINE_LOCATION -> {
+                                TextLocationFinePermission()
+                            }
+                            Manifest.permission.NEARBY_WIFI_DEVICES -> {
+                                TextNearDevicesPermission()
+                            }
+                        else -> return@forEach
+                        },
+                        isPermanentlyDenied = !shouldShowRequestPermissionRationale(permission),
+                        settingsButton = ::openSettings,
+                        onDismiss = { bluetoothViewModel.dismissDialog()},
+                        onOk = {
+                            bluetoothViewModel.dismissDialog()
+                            multiplePermissionsResultLauncher.launch(arrayOf(permission))
+                        }
+                    )
+                }
+
+
             }
         }
     }
-    override fun onStart(){
+ /**   override fun onStart(){
         super.onStart()
-        notificationEnableBluetooth()
-        registerChangesBluetooth()
-        requestPermissionLocationLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        //notificationEnableBluetooth()
+        //registerChangesBluetooth()
     }
     override fun onResume(){
         super.onResume()
@@ -58,10 +124,16 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         unregisterReceiver(bluetoothStateReceiver)
     }
+*/
+
+
+    private val bluetoothAdapter: BluetoothAdapter? by lazy() {
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothManager.adapter
+    }
 
     //fun que hace aparecer la ventana para aceptar/denegar activar el Bluetooth
     private fun notificationEnableBluetooth(){
-        val bluetoothAdapter = bluetoothViewModel.getBluetoothAdapter(this)
         if(bluetoothAdapter != null){
             if(bluetoothAdapter?.isEnabled == false){
                 //lanza ventana activar bluetooth permitir/denegar
@@ -99,3 +171,9 @@ class MainActivity : ComponentActivity() {
 
 }
 
+fun Activity.openSettings() {
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", packageName, null)
+    ).also(::startActivity)
+}

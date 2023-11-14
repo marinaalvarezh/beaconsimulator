@@ -9,21 +9,18 @@ import com.example.beaconsimulator.BluetoothScreen
 
 @Composable
 fun Navigation(
-    viewModel: BluetoothViewModel
 ){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = AppScreens.BluetoothScreen.route){
+    NavHost(navController = navController, startDestination = AppScreens.DevicesScreen.route){
         //administración de rutas del NavHost
 
         composable(route = AppScreens.BluetoothScreen.route){
-            BluetoothScreen(viewModel, navController)
+            BluetoothScreen(navController)
         }
 
         composable(route = AppScreens.DevicesScreen.route){
             DevicesScreen(navController)
         }
     }
-
-
 }

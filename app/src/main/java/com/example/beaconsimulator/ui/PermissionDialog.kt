@@ -1,9 +1,12 @@
 package com.example.beaconsimulator.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,27 +27,28 @@ fun PermissionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         buttons = {
-            Text(
-                text = if (isPermanentlyDenied){
-                    "Go Settings APP"
-                } else{
-                    "OK"
-                },
-                color= MaterialTheme.colors.secondary,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (isPermanentlyDenied) {
-                            settingsButton()
-                        } else {
-                            onOk()
-                        }
-                    }
-                    .padding(20.dp)
-            )
+          Row(
+              modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(10.dp),
+              horizontalArrangement = Arrangement.End
+          ) {
+              if(isPermanentlyDenied){
+                  Button(
+                      onClick = {settingsButton()},
+                      modifier = Modifier.padding(10.dp)
+                  ){
+                      Text(text = "Go to Settings")
+                  }
+              } else {
+                  Button(
+                      onClick = {onOk()},
+                      modifier = Modifier.padding(10.dp)
+                  ){
+                      Text(text = "OK")
+                  }
+              }
+          }
         },
         title = {
             Text(text = "Permission Required")
@@ -53,6 +57,7 @@ fun PermissionDialog(
             Text(text = textPermission.getText(isPermanentlyDenied= isPermanentlyDenied))
         }
     )
+
 }
 
 interface TextDialogPermission{

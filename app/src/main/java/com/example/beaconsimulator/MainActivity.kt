@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -36,7 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.example.beaconsimulator.ui.*
 import com.example.beaconsimulator.ui.theme.BeaconSimulatorTheme
 
@@ -80,7 +84,6 @@ class MainActivity : ComponentActivity() {
                                 isGranted = perms[permission] ?: false
                             )
                         }
-
                     }
                 )
 
@@ -112,7 +115,14 @@ class MainActivity : ComponentActivity() {
 
                     Button (
                         onClick = {
-                            multiplePermissionsResultLauncher.launch(permissionsToRequest)
+                            if(ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                                && ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                                && ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_GRANTED
+                            ){
+                                Toast.makeText(this@MainActivity, "ALL IS OK", Toast.LENGTH_SHORT).show()
+                            }else{
+                                multiplePermissionsResultLauncher.launch(permissionsToRequest)
+                            }
                         },
                         modifier = Modifier
                             .padding(80.dp)
@@ -134,7 +144,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-
                 /**Lanza segundo dialogo de permisos con los que han sido rechazados*/
 
                 secondPermissionDialog
@@ -154,7 +163,9 @@ class MainActivity : ComponentActivity() {
                         else -> return@forEach
                         },
                         isPermanentlyDenied = !shouldShowRequestPermissionRationale(permission),
+                        /**la funcion should.. devuelve true cuando ya se ha negado el permiso y se quiere añadir explicacion, falso --> permiso aceptado/no volver a mostrar*/
                         settingsButton = ::openSettings,
+                        /**referencia a la funcion openSettings*/
                         onDismiss = { bluetoothViewModel.dismissDialog()},
                         onOk = {
                             bluetoothViewModel.dismissDialog()
@@ -162,8 +173,6 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
-
-
             }
         }
     }
@@ -225,7 +234,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
 fun Activity.openSettings() {
